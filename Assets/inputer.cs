@@ -8,6 +8,7 @@ using Random = System.Random;
 public class GaussianRNG
 {
     private Random rnd = new Random();
+
     public double GetNormDist(double mean, double stdDev)
     {
         return mean + (RandNormDist() * stdDev);
@@ -24,16 +25,17 @@ public class GaussianRNG
             u = rnd.NextDouble() * 2.0 - 1.0;
             v = rnd.NextDouble() * 2.0 - 1.0;
             w = u * u + v * v;
-        } while (w==0.0||w>=1.0);
+        } while (w == 0.0 || w >= 1.0);
 
         c = Math.Sqrt((-2 * Math.Log(w)) / w);
         return u * c;
     }
 }
+
 public class inputer : MonoBehaviour
 {
-
-    public float speed = 7f;
+    public float angleSpeed = Mathf.PI * 4;
+    public float lineSpeed = 7f;
     public Camera cam;
 
     public Vector3 moveDirection;
@@ -56,6 +58,7 @@ public class inputer : MonoBehaviour
             Debug.Log(rndTime);
         }
     }
+
     void Update()
     {
         curPos = transform.position;
@@ -63,14 +66,14 @@ public class inputer : MonoBehaviour
         headTo(out headToPos);
 
         transform.position = curPos;
-        transform.Translate(moveDirection * Time.deltaTime);
+        transform.Translate(moveDirection * lineSpeed * Time.deltaTime);
         transform.LookAt(headToPos);
 
         if (timeOut())
         {
             timer = 0;
 
-            var rndTime = rnd.GetNormDist(mean,dev) / 1000;
+            var rndTime = rnd.GetNormDist(mean, dev) / 1000;
             Socket.Send(new Packet
             {
                 curPos = curPos,
@@ -119,7 +122,6 @@ public class inputer : MonoBehaviour
         }
 
         moveDir.Normalize();
-        moveDir *= speed;
         return moveDir != Vector3.zero;
     }
 

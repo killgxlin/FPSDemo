@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security;
 using Assets;
 using UnityEngine;
 using Random = System.Random;
@@ -16,16 +17,18 @@ public class Ghost : MonoBehaviour {
 
     public float interval = 1.0f;
     public float timer = 0.0f;
-    public float speed = 7.0f;
+    public float lineSpeed = 7.0f;
+
+	public float angleSpeed = Mathf.PI * 10;
 	// Update is called once per frame
 	void Update ()
 	{
 	    if (curPacket != null)
 	    {
-	        var dist = Time.deltaTime* speed;
-	        var distV = transform.position - curPacket.curPos;
-            transform.position = Vector3.Lerp(transform.position, curPacket.curPos, dist / distV.magnitude);
-	        transform.LookAt(curPacket.headPos);
+		    var dstHead = curPacket.headPos - curPacket.curPos;
+		    transform.position = Vector3.MoveTowards(transform.position, curPacket.curPos, lineSpeed * Time.deltaTime);
+		    transform.forward =
+			    Vector3.RotateTowards(transform.forward, dstHead, angleSpeed * Time.deltaTime, angleSpeed * Time.deltaTime);
 	    }
         
         
@@ -43,5 +46,6 @@ public class Ghost : MonoBehaviour {
         transform.position = motion.curPos;
         transform.Translate(motion.movSpeed*Time.deltaTime);
         transform.LookAt(motion.headPos);
+	    
     }
 }
